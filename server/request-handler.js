@@ -12,7 +12,7 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-var storageData = [{username:"Matt",text:"Wissem"}];
+var storageData = [];
 var defaultCorsHeaders = {
   'access-control-allow-origin': '*',
   'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -71,12 +71,11 @@ var requestHandler = function(request, response) {
     response.writeHead(statusCode, headers); 
     request.on('data', function (chunk) {
       results.push(chunk);
-      // console.log("results :", results);
       storageData.push(JSON.parse(chunk));
-      // console.log("CHUNK: ", JSON.parse(chunk));
-      // console.log("STORAGE: ", storageData);
+    }).on('end', () => {
+      response.end();
     });
-    response.end();
+    // response.end();
     
   } else {
     var statusCode = 404;

@@ -25,17 +25,17 @@ var app = {
     app.$roomSelect.on('change', app.handleRoomChange);
 
     // Fetch previous messages
-    app.startSpinner();
-    app.fetch(false);
+    // app.startSpinner();
+    app.fetch();
 
     // Poll for new messages
     setInterval(function() {
-      app.fetch(true);
-    }, 3000);
+      app.fetch();
+    }, 1500);
   },
 
   send: function(message) {
-    app.startSpinner();
+    // app.startSpinner();
 
     // POST the message to the server
     $.ajax({
@@ -50,10 +50,9 @@ var app = {
         // Trigger a fetch to update the messages, pass true to animate
         app.fetch();
       },
-      error: function (error) {
+      error: function (error, descrip) {
         console.error('chatterbox: Failed to send message', error);
-        // app.$message.val('');
-        // app.fetch();
+        console.log(descrip);
       }
     });
   },
@@ -75,14 +74,14 @@ var app = {
 
         // Only bother updating the DOM if we have a new message
         // if (mostRecentMessage.objectId !== app.lastMessageId) {
-          // Update the UI with the fetched rooms
-          app.renderRoomList(data.results);
+        // Update the UI with the fetched rooms
+        app.renderRoomList(data.results);
 
-          // Update the UI with the fetched messages
-          app.renderMessages(data.results, animate);
+        // Update the UI with the fetched messages
+        app.renderMessages(data.results, animate);
 
-          // Store the ID of the most recent message
-          app.lastMessageId = mostRecentMessage.objectId;
+        // Store the ID of the most recent message
+        app.lastMessageId = mostRecentMessage.objectId;
         // }
       },
       error: function(error) {
@@ -204,7 +203,7 @@ var app = {
         app.$roomSelect.val(roomname);
       }
     } else {
-      app.startSpinner();
+      // app.startSpinner();
       // Store as undefined for empty names
       app.roomname = app.$roomSelect.val();
     }
