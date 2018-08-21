@@ -12,7 +12,13 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
-var storageData = [];
+var storageData = [{username:"Matt",text:"Wissem"}];
+var defaultCorsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+  'access-control-max-age': 10 // Seconds.
+};
 
 var requestHandler = function(request, response) {
   // Request and Response come from node's http module.
@@ -47,11 +53,18 @@ var requestHandler = function(request, response) {
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
-  if (method === 'GET' && url === '/classes/messages') {
+  if ( method === 'GET' && url.indexOf('/classes/messages') !== -1 ) {
     var statusCode = 200;
     response.writeHead(statusCode, headers); 
     results = storageData;
-    response.end(JSON.stringify({headers, method, url, results}));
+    // console.log(results);
+    response.end(JSON.stringify({results}));
+    
+  } else if ( method === 'OPTIONS' && url.indexOf('/classes/messages') !== -1 ) {
+    var statusCode = 200;
+    response.writeHead(statusCode, headers); 
+    // console.log(results);
+    response.end();
     
   } else if (method === 'POST' && url === '/classes/messages') {
     var statusCode = 201;
@@ -60,14 +73,15 @@ var requestHandler = function(request, response) {
       results.push(chunk);
       // console.log("results :", results);
       storageData.push(JSON.parse(chunk));
-      // console.log("STORAGE DATA: ", storageData);
+      // console.log("CHUNK: ", JSON.parse(chunk));
+      // console.log("STORAGE: ", storageData);
     });
-    response.end(JSON.stringify({headers, method, url, results}));
+    response.end();
     
   } else {
     var statusCode = 404;
     response.writeHead(statusCode, headers); 
-    response.end(JSON.stringify({headers, method, url, results}));
+    response.end();
   }
 
   // response.write(body);
@@ -88,13 +102,7 @@ var requestHandler = function(request, response) {
 // which is considered a different domain.
 //
 // Another way to get around this restriction is to serve you chat
-// client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept',
-  'access-control-max-age': 10 // Seconds.
-};
+// client from this domain by setting up static file serving.=
 
 var exports = module.exports = {};
 
